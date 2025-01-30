@@ -1,0 +1,16 @@
+cac_agent:
+  name: "CAC Agent"
+  version: "1.0.0"
+  description: "Basic implementation of Cohen's Agentic Conjecture"
+  
+  systems:
+    neural:
+      model_type: "gpt-3.5-turbo"
+      confidence_threshold: 0.75
+      
+    symbolic:
+      rules_file: "rules.yaml"
+      
+    gating:
+      default_threshold: 0.75
+      adaptation_rate: 0.1

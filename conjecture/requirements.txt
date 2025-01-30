@@ -1,0 +1,8 @@
+dspy-ai>=2.0.0
+pyyaml>=6.0
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-dotenv>=0.19.0
+structlog>=21.1.0
+click>=8.0.0
+numpy>=1.21.0

@@ -1,0 +1,23 @@
+# Basic symbolic reasoning rules
+rules:
+  - name: "sign_rule"
+    description: "Determine class based on sign of input"
+    conditions:
+      - "x < 0"
+      - "class = 0"
+      - "x >= 0"
+      - "class = 1"
+  
+  - name: "confidence_rule"
+    description: "Handle low confidence predictions"
+    conditions:
+      - "confidence < 0.75"
+      - "use_symbolic = True"
+      - "confidence >= 0.75"
+      - "use_symbolic = False"
+
+# Model configuration
+model:
+  name: "anthropic/claude-3.5-sonnet:beta"
+  temperature: 0.7
+  max_tokens: 1000
