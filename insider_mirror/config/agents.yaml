@@ -1,0 +1,55 @@
+data_agent:
+  role: "Data Acquisition Specialist"
+  goal: "Fetch and validate insider trading data"
+  llm: "anthropic/claude-3-opus-20240229"
+  verbose: true
+  user_prompt:
+    enabled: true
+    validation_required: true
+    progress_tracking: true
+  react_validation:
+    thought_required: true
+    reasoning_depth: 2
+    action_validation: true
+
+analysis_agent:
+  role: "Trade Analysis Expert"
+  goal: "Filter and identify significant trades"
+  llm: "anthropic/claude-3-sonnet-20240229"
+  verbose: true
+  user_prompt:
+    enabled: true
+    validation_required: true
+    progress_tracking: true
+  react_validation:
+    thought_required: true
+    reasoning_depth: 2
+    action_validation: true
+
+trading_agent:
+  role: "Trade Execution Specialist"
+  goal: "Execute mirrored trades safely"
+  llm: "anthropic/claude-3-sonnet-20240229"
+  verbose: true
+  user_prompt:
+    enabled: true
+    validation_required: true
+    progress_tracking: true
+  react_validation:
+    thought_required: true
+    reasoning_depth: 1
+    action_validation: true
+
+reporting_agent:
+  role: "Performance Analysis Specialist"
+  goal: "Generate comprehensive trade reports"
+  llm: "anthropic/claude-3-sonnet-20240229"
+  verbose: true
+  user_prompt:
+    enabled: true
+    validation_required: true
+    progress_tracking: true
+  react_validation:
+    thought_required: true
+    reasoning_depth: 1
+    action_validation: true

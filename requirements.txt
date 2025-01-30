@@ -1,0 +1,16 @@
+# Core dependencies
+crewai==0.1.20  # Using an older version that might not require newer sqlite
+cryptography>=41.0.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+httpx>=0.24.0
+asyncio>=3.4.3
+
+# Development dependencies
+pytest>=7.0.0
+black>=22.3.0
+flake8>=4.0.1
+isort>=5.10.1
+
+# Optional integrations
+slack-sdk>=3.19.0

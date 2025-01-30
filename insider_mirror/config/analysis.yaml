@@ -1,0 +1,100 @@
+performance_metrics:
+  trade_execution:
+    - name: "Execution Time"
+      threshold: 500  # milliseconds
+      priority: "high"
+      alert_threshold: 1000
+      recovery_action: "Optimize order routing"
+    
+    - name: "Slippage"
+      threshold: 0.1  # percentage
+      priority: "critical"
+      alert_threshold: 0.2
+      recovery_action: "Adjust execution strategy"
+    
+    - name: "Fill Rate"
+      threshold: 98  # percentage
+      priority: "high"
+      alert_threshold: 95
+      recovery_action: "Review order types"
+
+  risk_metrics:
+    - name: "Position Size"
+      threshold: 5  # percentage of portfolio
+      priority: "critical"
+      alert_threshold: 7
+      recovery_action: "Reduce position"
+    
+    - name: "Daily Drawdown"
+      threshold: 2  # percentage
+      priority: "high"
+      alert_threshold: 3
+      recovery_action: "Halt trading"
+    
+    - name: "Portfolio Concentration"
+      threshold: 20  # percentage in single asset
+      priority: "medium"
+      alert_threshold: 25
+      recovery_action: "Rebalance portfolio"
+
+  system_metrics:
+    - name: "API Response Time"
+      threshold: 200  # milliseconds
+      priority: "high"
+      alert_threshold: 500
+      recovery_action: "Switch to backup API"
+    
+    - name: "Error Rate"
+      threshold: 1  # percentage
+      priority: "critical"
+      alert_threshold: 2
+      recovery_action: "Engage fallback mode"
+
+optimization_rules:
+  - rule: "Execution Optimization"
+    condition: "execution_time > metrics.Execution_Time.threshold"
+    action: "Implement smart order routing"
+    priority: "high"
+    validation:
+      - "Verify new routing improves execution time"
+      - "Check impact on slippage"
+    
+  - rule: "Risk Management"
+    condition: "position_size > metrics.Position_Size.threshold"
+    action: "Adjust position sizing algorithm"
+    priority: "critical"
+    validation:
+      - "Verify position sizes within limits"
+      - "Check impact on portfolio risk"
+    
+  - rule: "Portfolio Balance"
+    condition: "portfolio_concentration > metrics.Portfolio_Concentration.threshold"
+    action: "Rebalance portfolio positions"
+    priority: "medium"
+    validation:
+      - "Verify concentration within limits"
+      - "Check trading costs impact"
+
+  - rule: "Error Recovery"
+    condition: "error_rate > metrics.Error_Rate.threshold"
+    action: "Engage fallback systems"
+    priority: "critical"
+    validation:
+      - "Verify system stability"
+      - "Check data consistency"
+
+reporting:
+  format: "detailed"
+  include_metrics: true
+  include_trends: true
+  alert_threshold: "high"
+  retention_period: 90  # days
+  aggregation_intervals:
+    - "hourly"
+    - "daily"
+    - "weekly"
+    - "monthly"
+  export_formats:
+    - "html"
+    - "csv"
+    - "json"

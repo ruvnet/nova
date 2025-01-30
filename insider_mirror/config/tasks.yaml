@@ -1,0 +1,62 @@
+data_task:
+  description: "Fetch and validate insider trading data from configured sources. Consider: 1) API availability 2) Data completeness 3) Validation rules"
+  expected_output: "Validated insider trading data ready for analysis"
+  agent: data_agent
+  validation:
+    required_fields:
+      - symbol
+      - transaction_type
+      - shares
+      - price
+      - value
+      - filing_date
+    data_types:
+      symbol: str
+      transaction_type: str
+      shares: int
+      price: float
+      value: float
+      filing_date: datetime
+
+analysis_task:
+  description: "Analyze insider trading data to identify significant trades. Consider: 1) Trade value thresholds 2) Trading patterns 3) Risk factors"
+  expected_output: "Filtered list of significant trades for mirroring"
+  agent: analysis_agent
+  filters:
+    min_value: 100000
+    min_shares: 1000
+    transaction_types:
+      - "PURCHASE"
+      - "SALE"
+    exclude_types:
+      - "OPTION_EXERCISE"
+      - "GIFT"
+
+trading_task:
+  description: "Execute mirrored trades based on analyzed data. Consider: 1) Risk management 2) Position sizing 3) Execution timing"
+  expected_output: "Trade execution results with performance metrics"
+  agent: trading_agent
+  risk_management:
+    max_position_size: 0.05  # 5% of portfolio
+    max_daily_trades: 10
+    max_concentration: 0.20  # 20% in single asset
+    stop_loss: 0.02  # 2% per trade
+    daily_drawdown_limit: 0.05  # 5% daily limit
+
+reporting_task:
+  description: "Generate comprehensive trade reports. Consider: 1) Performance metrics 2) Risk analysis 3) Historical comparisons"
+  expected_output: "Detailed HTML/CSV reports with trade analytics"
+  agent: reporting_agent
+  report_config:
+    formats:
+      - html
+      - csv
+    metrics:
+      - win_rate
+      - profit_factor
+      - sharpe_ratio
+      - max_drawdown
+    intervals:
+      - daily
+      - weekly
+      - monthly
