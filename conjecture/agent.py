@@ -1,7 +1,6 @@
 import yaml
-import dspy
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from conjecture.core.neural import NeuralSubsystem
 from conjecture.core.symbolic import SymbolicSubsystem
@@ -35,24 +34,11 @@ class CACAgent:
             
     def _initialize_systems(self):
         """Initialize the neural, symbolic, and gating systems"""
-        # Load prompts
-        try:
-            package_dir = os.path.dirname(os.path.abspath(__file__))
-            prompts_path = os.path.join(package_dir, 'config', 'prompts.yaml')
-            with open(prompts_path, 'r') as f:
-                prompts = yaml.safe_load(f)
-                dspy.settings.configure(
-                    neural_system_prompt=prompts['neural_system_prompt'],
-                    symbolic_system_prompt=prompts['symbolic_system_prompt']
-                )
-        except Exception as e:
-            print(f"Error loading prompts: {e}")
-        
         # Initialize subsystems with default config if none loaded
         default_config = {
             'systems': {
                 'neural': {'confidence_threshold': 0.75},
-                'symbolic': {'rules_file': os.path.join(package_dir, 'config', 'rules.yaml')},
+                'symbolic': {'rules_file': 'config/rules.yaml'},
                 'gating': {'default_threshold': 0.75, 'adaptation_rate': 0.1}
             }
         }
@@ -64,12 +50,21 @@ class CACAgent:
         self.system2 = SymbolicSubsystem(config['systems']['symbolic'])
         self.gating = GatingController(config['systems']['gating'])
         
-    def process(self, x: float) -> Dict[str, Any]:
+    def process(
+        self, 
+        x: float, 
+        threshold: Optional[float] = None,
+        force_system: Optional[str] = None,
+        verbose: bool = False
+    ) -> Dict[str, Any]:
         """
         Process input using both systems and gating
         
         Args:
             x: Input value to classify
+            threshold: Optional override for confidence threshold
+            force_system: Optional force 'neural' or 'symbolic' system
+            verbose: Whether to include detailed reasoning
             
         Returns:
             Dict containing prediction results and metadata
@@ -80,14 +75,27 @@ class CACAgent:
         # Get symbolic prediction
         symbolic_pred, reason = self.system2.reason(x)
         
-        # Get gating decision
-        final_pred, source, conf = self.gating.decide(
-            (neural_pred, confidence),
-            (symbolic_pred, reason),
-            confidence
-        )
+        # Apply runtime configuration
+        if threshold is not None:
+            self.gating.threshold = threshold
+            
+        if force_system == 'neural':
+            final_pred = neural_pred
+            source = 'neural'
+            conf = confidence
+        elif force_system == 'symbolic':
+            final_pred = symbolic_pred
+            source = 'symbolic'
+            conf = confidence
+        else:
+            # Get gating decision
+            final_pred, source, conf = self.gating.decide(
+                (neural_pred, confidence),
+                (symbolic_pred, reason),
+                confidence
+            )
         
-        return {
+        result = {
             'prediction': final_pred,
             'confidence': conf,
             'source': source,
@@ -96,6 +104,28 @@ class CACAgent:
             'reasoning': reason,
             'input_value': x
         }
+        
+        if verbose:
+            result.update({
+                'threshold': self.gating.threshold,
+                'detailed_reasoning': {
+                    'neural': {
+                        'prediction': neural_pred,
+                        'confidence': confidence
+                    },
+                    'symbolic': {
+                        'prediction': symbolic_pred,
+                        'reasoning': reason
+                    },
+                    'gating': {
+                        'threshold': self.gating.threshold,
+                        'selected_system': source,
+                        'final_confidence': conf
+                    }
+                }
+            })
+            
+        return result
         
     def update_performance(self, performance_metric: float):
         """

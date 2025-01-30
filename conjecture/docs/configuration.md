@@ -1,244 +1,141 @@
 # CAC Agent Configuration Guide
 
-## Overview
+## Runtime Configuration
 
-This document details the configuration structure and setup for the Cohen's Agentic Conjecture (CAC) agent implementation. The configuration system uses YAML files to define agent behavior, system parameters, and integration settings.
+The CAC agent supports real-time fine-tuning of its decision-making process through command-line options. This allows users to adjust system behavior without modifying configuration files or restarting the agent.
 
-## Configuration Files
+### Command-Line Options
 
-### 1. Main Agent Configuration (config/agents.yaml)
+```bash
+# Basic prediction
+cac predict 0.75
+
+# Override confidence threshold
+cac predict 0.75 --threshold 0.9
+
+# Force specific system
+cac predict 0.75 --force-system neural
+cac predict 0.75 --force-system symbolic
+
+# Show detailed reasoning
+cac predict 0.75 --verbose
+```
+
+### Use Cases
+
+1. **Confidence Threshold Adjustment**
+   - Default threshold is 0.75
+   - Increase for high-stakes decisions: `--threshold 0.9`
+   - Decrease for exploratory analysis: `--threshold 0.6`
+   ```bash
+   # High-confidence requirement
+   cac predict 0.75 --threshold 0.9
+   ```
+
+2. **System Selection**
+   - Force neural system for pattern-based decisions
+   - Force symbolic system for rule-based validation
+   ```bash
+   # Test neural system behavior
+   cac predict 0.75 --force-system neural
+   ```
+
+3. **Detailed Analysis**
+   - View step-by-step reasoning process
+   - Understand system decisions
+   ```bash
+   # Show detailed reasoning steps
+   cac predict 0.75 --verbose
+   ```
+
+## Static Configuration
+
+### Main Agent Configuration (config/agents.yaml)
 
 ```yaml
 cac_agent:
   name: "CAC Agent"
   version: "1.0.0"
-  description: "Cohen's Agentic Conjecture implementation using NOVA framework"
+  description: "Cohen's Agentic Conjecture implementation"
   
-  # Core system settings
   systems:
     neural:
-      model_type: "transformer"
-      model_path: "models/neural_model.pt"
+      model_type: "simple_mlp"
       confidence_threshold: 0.75
-      batch_size: 32
-      embedding_dim: 512
       
     symbolic:
       rules_file: "config/rules.yaml"
-      knowledge_graph: "config/knowledge.yaml"
-      inference_engine: "prolog"
-      max_depth: 5
       
     gating:
       default_threshold: 0.75
       adaptation_rate: 0.1
-      monitoring_window: 100
-      
-  # NOVA integration settings
-  nova:
-    tools:
-      - name: "cac_tool"
-        path: "tools.cac_tool.CACTool"
-        config: "config/tools.yaml"
-    
-    validation:
-      enabled: true
-      rules: "config/validation.yaml"
-      
-    logging:
-      level: "INFO"
-      format: "detailed"
-      output: "logs/cac_agent.log"
 ```
 
-### 2. Rules Configuration (config/rules.yaml)
+### Rules Configuration (config/rules.yaml)
 
 ```yaml
-# Symbolic reasoning rules
 rules:
-  - name: "confidence_threshold"
-    condition: "confidence < 0.75"
-    action: "defer_to_symbolic"
-    
-  - name: "contradiction_check"
-    condition: "neural_output != symbolic_output"
-    action: "resolve_contradiction"
-    
-  - name: "performance_monitoring"
-    condition: "error_rate > 0.1"
-    action: "adjust_threshold"
-
-# Domain-specific rules
-domain_rules:
-  - category: "validation"
-    rules:
-      - name: "input_validation"
-        pattern: "input_schema"
-        action: "validate_input"
-      
-  - category: "processing"
-    rules:
-      - name: "processing_pipeline"
-        steps: ["preprocess", "analyze", "validate"]
-        action: "execute_pipeline"
-```
-
-### 3. Knowledge Graph Configuration (config/knowledge.yaml)
-
-```yaml
-# Knowledge graph structure
-entities:
-  - type: "concept"
-    properties:
-      - name: "id"
-        type: "string"
-      - name: "description"
-        type: "text"
-        
-  - type: "relation"
-    properties:
-      - name: "source"
-        type: "reference"
-      - name: "target"
-        type: "reference"
-      - name: "type"
-        type: "string"
-
-# Initial knowledge
-concepts:
-  - id: "neural_processing"
-    description: "Fast, intuitive processing system"
-    
-  - id: "symbolic_reasoning"
-    description: "Slow, deliberative reasoning system"
-
-relations:
-  - source: "neural_processing"
-    target: "symbolic_reasoning"
-    type: "complements"
-```
-
-### 4. Tool Configuration (config/tools.yaml)
-
-```yaml
-cac_tool:
-  name: "CAC Tool"
-  version: "1.0.0"
-  description: "Tool for CAC agent operations"
-  
-  capabilities:
-    - name: "neural_inference"
-      description: "Run neural network inference"
-      parameters:
-        - name: "input"
-          type: "tensor"
-          required: true
-          
-    - name: "symbolic_reasoning"
-      description: "Execute symbolic reasoning"
-      parameters:
-        - name: "query"
-          type: "string"
-          required: true
-```
-
-## Environment Variables
-
-```bash
-# Core settings
-export CAC_ENV="development"
-export CAC_CONFIG_PATH="/path/to/config"
-export CAC_MODEL_PATH="/path/to/models"
-
-# Integration settings
-export NOVA_API_KEY="your-api-key"
-export OPENAI_API_KEY="your-openai-key"
-
-# Monitoring
-export CAC_MONITORING_ENABLED="true"
-export CAC_LOG_LEVEL="INFO"
-```
-
-## Configuration Management
-
-### 1. Loading Configuration
-
-```python
-class ConfigLoader:
-    def __init__(self, config_path):
-        self.config_path = config_path
-        
-    def load_config(self):
-        # Load and validate configuration
-        pass
-        
-    def validate_config(self, config):
-        # Validate configuration structure
-        pass
-```
-
-### 2. Configuration Updates
-
-```python
-class ConfigManager:
-    def __init__(self, config):
-        self.config = config
-        self.observers = []
-        
-    def update_config(self, updates):
-        # Update configuration and notify observers
-        pass
-        
-    def add_observer(self, observer):
-        # Add configuration change observer
-        pass
+  - name: "sign_rule"
+    description: "Determine class based on sign of input"
+    conditions:
+      - "x < 0"
+      - "class = 0"
+      - "x >= 0"
+      - "class = 1"
 ```
 
 ## Best Practices
 
-1. **Version Control**
-   - Keep configuration files in version control
-   - Document all configuration changes
-   - Use environment-specific configurations
+1. **Threshold Selection**
+   - Higher thresholds (>0.8) for critical decisions
+   - Lower thresholds (<0.7) for exploratory analysis
+   - Default (0.75) for general use
 
-2. **Security**
-   - Never commit sensitive values
-   - Use environment variables for secrets
-   - Implement access control for configurations
+2. **System Selection**
+   - Use neural system for pattern recognition
+   - Use symbolic system for rule validation
+   - Let gating decide for balanced decisions
 
-3. **Validation**
-   - Validate all configuration values
-   - Provide clear error messages
-   - Use schema validation
+3. **Verbose Output**
+   - Use for debugging and analysis
+   - Helpful for understanding edge cases
+   - Useful for system validation
 
-4. **Monitoring**
-   - Log configuration changes
-   - Monitor configuration usage
-   - Alert on configuration errors
+## Examples
+
+### Critical Decision Making
+```bash
+# High confidence requirement with detailed reasoning
+cac predict 0.75 --threshold 0.9 --verbose
+```
+
+### System Testing
+```bash
+# Compare system behaviors
+cac predict 0.05 --force-system neural
+cac predict 0.05 --force-system symbolic
+```
+
+### Edge Case Analysis
+```bash
+# Analyze decision boundary
+cac predict 0.01 --verbose
+cac predict -0.01 --verbose
+```
 
 ## Troubleshooting
 
-### Common Issues
+1. **Inconsistent Decisions**
+   - Check confidence threshold
+   - Verify rule configurations
+   - Use verbose mode for analysis
 
-1. **Configuration Loading Failures**
-   - Check file permissions
-   - Verify YAML syntax
-   - Validate file paths
+2. **System Bias**
+   - Adjust confidence threshold
+   - Review symbolic rules
+   - Force system for validation
 
-2. **Integration Issues**
-   - Verify API keys
-   - Check service endpoints
-   - Validate tool configurations
-
-3. **Performance Problems**
-   - Review threshold settings
-   - Check monitoring configuration
-   - Verify resource allocations
-
-## Next Steps
-
-1. Set up development environment
-2. Configure core components
-3. Test configuration loading
-4. Deploy initial version
-5. Monitor and adjust settings
+3. **Performance Issues**
+   - Monitor decision times
+   - Check rule complexity
+   - Adjust thresholds if needed
